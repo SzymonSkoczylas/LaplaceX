@@ -1,0 +1,269 @@
+.data
+	r byte 9 dup(?)
+	g byte 9 dup(?)
+	b byte 9 dup(?)
+
+.code
+
+;
+;parametry(IntPtr inputArrayPointer, IntPtr outputArrayPointer,
+;               int bitmapLength, int bitmapWidth, int startIndex, int indicesToFilter
+ApplyFilterAsm proc
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;  PARAMS  ;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+mov r11, rcx; r11 = inputArrayPointer
+mov r12, rdx; r12 = outputArrayPointer
+mov r13, r8; r13 = bitmapLength
+mov r14, r9; r14 = bitmapWidth
+mov r15, qword ptr [rsp+40]; r15 = startIndex
+mov rdi, qword ptr [rsp+48]; rdi = indicesToFilter
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;  MASK  ;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; -1 0 -1
+;  0 4  0
+; -1 0 -1
+
+mov byte ptr [rax], -1;
+mov byte ptr [rax+1], 0;
+mov byte ptr [rax+2], -1;
+mov byte ptr [rax+3], 0;
+mov byte ptr [rax+4], 4;
+mov byte ptr [rax+5], 0;
+mov byte ptr [rax+6], -1;
+mov byte ptr [rax+7], 0;
+mov byte ptr [rax+8], -1;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;  CODE  ;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+mov rsi, 0; rsi = i
+add rdi, r15; rdi = indicesToFilter + startIndex
+;starting loop that will apply laplace filter to every pixel
+main_loop:
+	;;
+	;; Skip indices on the edges of the bitmap - do not filter them according to the algorithm
+	;;
+	cmp rsi, rdi;				if i >= indicesToFilter + startIndex then goto end
+	jge end_loop; end loop
+
+	cmp rsi, r14;				if i < bitmapWidth then goto cont
+	jl cont; continue
+
+	mov rbx, rsi; rbx = i
+	xor rcx, rcx; rcx clearing
+	div rbx;
+	test rcx, rcx;				if i % bitmapWidth == 0 then goto cont
+	jz cont; continue
+
+	mov rbx, r13; rbx = bitmapLength
+	sub rbx, r14; rbx = bitmapLength - bitmapWidth
+	cmp rsi, rbx;				if i >= bitmapLength - bitmapWidth then goto cont
+	jge cont; continue
+
+	mov rbx, rsi; rbx = i
+	add rbx, 3; rbx = i + 3
+	xor rcx, rcx; rcx clearing
+	div rbx;
+	test rcx, rcx;				if (i + 3) % bitmapWidth == 0 then goto cont
+	jz cont; continue
+	;;
+	;;
+	;;
+	xor rbx, rbx; rbx clearing, pixelIndex
+	xor rcx, rcx; rcx clearing, rgbIndex
+	;inner loop
+	xor r8, r8; y = 0
+	pixel_declaring_loop:
+		cmp r8, 3;				if y >= 3 then goto end_pixel_declaring_loop
+		je end_pixel_declaring_loop; 
+		xor	r9, r9; x = 0
+		inner_loop:
+			cmp r9, 3;			if x = 3 then goto end_inner_loop
+			je end_inner_loop;  
+			;
+			; maths
+			;
+			mov rbp, r14; rbp = bitmapWidth
+			mov r10,r8; r10 = y
+			sub r10,1; r10 = y - 1
+			imul rbp, r10; rbp = bitmapWidth * (y - 1)
+			mov r10, r9; r10 = x
+			sub r10, 1; r10 = x - 1
+			imul r10, 3; r10 = 3 * (x - 1)
+			add rbp, r10; rbp = bitmapWidth * (y - 1) + 3 * (x - 1)
+			mov r10, r9; r10 = x
+			imul r10, 3; r10 = 3 * x
+			add r10, r9; r10 = 3 * x + y
+			;
+			; inserting to array
+			;
+			mov r[ecx], [r11 + ebx] ; r[rgbIndex] = inputArrayPointer[pixelIndex]
+			inc ebx; pixelIndex++
+			mov g[ecx], [r11 + ebx] ; g[rgbIndex] = inputArrayPointer[pixelIndex]
+			inc ebx; pixelIndex++
+			mov b[ecx], [r11 + ebx] ; b[rgbIndex] = inputArrayPointer[pixelIndex]
+			;
+			; looping back
+			;
+			inc r9; x++
+			jmp inner_loop
+		end_inner_loop:
+			inc r8; y++
+			je pixel_declaring_loop;
+	end_pixel_declaring_loop:
+		mov r10, rsi; r10 = i
+		sub r10, r15; r10 = i - startIndex, outputPixelIndex
+		;
+		;	Calculate the R pixel value
+		;
+		xor rbx, rbx; rbx clearing, value
+		xor r9, r9; r9 clearing, i
+		calculate_loop_r:
+			cmp r9, 3; if i=3 goto end_calculate_loop 
+			je end_calculate_loop_r
+			xor r8, r8; r8 clearing, j
+			calculate_inner_loop_r:
+				cmp r8, 3; if j=3 goto end_calculate_inner_loop
+				je end_calculate_inner_loop_r
+				mov eax, r9; eax = i
+				mov ebx, r8; rbx = j
+				imul ebx, 3; eax = 3 * j
+				add ebx, eax; ebx = 3 * j + i
+				add rbx, r[ebx]
+				imul rbx, byte ptr [rax + ebx]; rbx = r[3 * j + i] * mask[3 * j + i]
+				inc r8; j++
+				jmp calculate_inner_loop_r
+			end_calculate_inner_loop_r:
+				inc r9; i++
+				jmp calculate_loop_r
+		end_calculate_loop_r:
+			;
+			;clamp
+			;
+			xor r9, r9; r9 clearing, 0 clamp
+			mov r8, 255; r8 = 255 clamp
+			cmp rbx, r8; if value < 0 then value = 0
+			jge clamp1_r
+
+			clamp_back1_r:
+			cmp r9, rbx; 
+			jge clamp2_r
+			jmp stop_clamping_r
+
+			clamp1_r:
+				mov rbc, r8; rbc = 255 clamp
+				jmp clamp_back1_r
+
+			clamp2_r:
+				mov rbx, r9; rbx = 0 clamp
+
+			stop_clamping_r:
+			mov [r12 + r10], rbx; outputArrayPointer[outputPixelIndex] = value
+			inc r10; outputPixelIndex++
+			;
+			;	Calculate the G pixel value
+			;
+			xor rbx, rbx; rbx clearing, value
+			xor r9, r9; r9 clearing, i
+			calculate_loop_g:
+				cmp r9, 3; if i=3 goto end_calculate_loop 
+				je end_calculate_loop_g
+				xor r8, r8; r8 clearing, j
+				calculate_inner_loop_g:
+					cmp r8, 3; if j=3 goto end_calculate_inner_loop
+					je end_calculate_inner_loop_g
+					mov eax, r9; eax = i
+					mov ebx, r8; rbx = j
+					imul ebx, 3; eax = 3 * j
+					add ebx, eax; ebx = 3 * j + i
+					add rbx, g[ebx]
+					imul rbx, byte ptr [rax + ebx]; rbx = g[3 * j + i] * mask[3 * j + i]
+					inc r8; j++
+					jmp calculate_inner_loop_g
+				end_calculate_inner_loop_g:
+					inc r9; i++
+					jmp calculate_loop_g
+			end_calculate_loop_g:
+				;
+				; clamp 
+				;
+				xor r9, r9; r9 clearing, 0 clamp
+				mov r8, 255; r8 = 255 clamp
+				cmp rbx, r8; if value < 0 then value = 0
+				jge clamp1_g
+
+				clamp_back1_g:
+				cmp r9, rbx; 
+				jge clamp2_g
+				jmp stop_clamping_g
+
+				clamp1_g:
+					mov rbc, r8; rbc = 255 clamp
+					jmp clamp_back1_g
+
+				clamp2_g:
+					mov rbx, r9; rbx = 0 clamp
+
+				stop_clamping_g:
+				mov [r12 + r10], rbx; outputArrayPointer[outputPixelIndex] = value
+				inc r10; outputPixelIndex++
+				;
+				;	Calculate the B pixel value
+				;
+				xor rbx, rbx; rbx clearing, value
+				xor r9, r9; r9 clearing, i
+				calculate_loop_b:
+					cmp r9, 3; if i=3 goto end_calculate_loop 
+					je end_calculate_loop_b
+					xor r8, r8; r8 clearing, j
+					calculate_inner_loop_b:
+						cmp r8, 3; if j=3 goto end_calculate_inner_loop
+						je end_calculate_inner_loop_b
+						mov eax, r9; eax = i
+						mov ebx, r8; rbx = j
+						imul ebx, 3; eax = 3 * j
+						add ebx, eax; ebx = 3 * j + i
+						add rbx, b[ebx]
+						imul rbx, byte ptr [rax + ebx]; rbx = b[3 * j + i] * mask[3 * j + i]
+						inc r8; j++
+						jmp calculate_inner_loop_b
+					end_calculate_inner_loop_b:
+						inc r9; i++
+						jmp calculate_loop_b
+				end_calculate_loop_b:
+					;
+					; clamp 
+					;
+					xor r9, r9; r9 clearing, 0 clamp
+					mov r8, 255; r8 = 255 clamp
+					cmp rbx, r8; if value < 0 then value = 0
+					jge clamp1_b
+
+					clamp_back1_b:
+					cmp r9, rbx; 
+					jge clamp2_b
+					jmp stop_clamping_b
+
+					clamp1_b:
+						mov rbc, r8; rbc = 255 clamp
+						jmp clamp_back1_b
+
+					clamp2_b:
+						mov rbx, r9; rbx = 0 clamp
+
+					stop_clamping_b:
+					mov [r12 + r10], rbx; outputArrayPointer[outputPixelIndex] = value
+cont:
+	add rsi, 3; rsi = i + 3
+	jmp main_loop
+
+end_loop:
+	ret
+ApplyFilterAsm endp
+end
