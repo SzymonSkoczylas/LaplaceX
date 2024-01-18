@@ -17,10 +17,10 @@ namespace Laplace
         static extern void ApplyFilterAsm(byte[] input, int width, int height, byte[] output);
 #else
         // Dll z CPP
-        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\Laplace\x64\Debug\CppDLL.dll")]
+        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Debug\CppDLL.dll")]
         static extern void ApplyFilterCpp(byte[] input, int width, int height, byte[] output);
         // Dll z Asm
-        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\Laplace\x64\Debug\AsmDLL.dll")]
+        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Debug\AsmDLL.dll")]
         static extern void ApplyFilterAsm(byte[] input, int width, int height, byte[] output);
 #endif
 

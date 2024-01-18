@@ -10,7 +10,7 @@ ApplyFilterAsm proc EXPORT
 	local y_max: QWORD
 	local widthX: QWORD
 	local height: QWORD
-	local ouput: QWORD
+	local output: QWORD
 	local image: QWORD
 	local sumR: SDWORD 
     local sumG: SDWORD 
@@ -58,20 +58,19 @@ ApplyFilterAsm proc EXPORT
 	mul rdx
 	mov widthX, rax
 	mov height, r8
-
-	mov ouput, r9					
+	mov output, r9					
 					
 	sub rax, 6							
 	mov x_max, rax
 	sub r8, 2
 	mov y_max, r8
 
-PETLAY:									
+LOOP_Y:									
 	mov rcx, 0
 	inc iter_y
 	mov iter_x, 0
 
-PETLAX:									
+LOOP_X:									
 	add iter_x, 3
 
 	mov sumR, 0						
@@ -257,7 +256,6 @@ PETLAX:
 	VPERM2F128 ymm0, ymm0, ymm0, 1
 	VPERM2F128 ymm1, ymm1, ymm1, 1
 	VPERM2F128 ymm2, ymm2, ymm2, 1
-
 	mov rcx, 4
 	get_upper_lane:
 	PEXTRD eax, xmm0, 0
@@ -271,7 +269,7 @@ PETLAX:
 	add sumR, eax
 	loop get_upper_lane 
 
-	; -------------------- BOTTOM RIGHT ----------------------------
+	;rest of algorithm
 
 	mov rax, iter_y	
 	inc rax				
@@ -310,7 +308,7 @@ PETLAX:
 	imul [LAPLACE_MASK + 32]
 	add sumR, eax
 
-	; normalize
+	; normalize - starting with RED
 	
 	xor rax, rax
 	mov eax, sumR
@@ -362,7 +360,7 @@ SAVE:
 	mul widthX		
 	add rax, iter_x		
 	add rax, 0				
-	add rax, ouput		
+	add rax, output		
 	mov r10d, sumR
 	mov [rax], r10b			
 
@@ -371,7 +369,7 @@ SAVE:
 	mul widthX
 	add rax, iter_x
 	add rax, 1				
-	add rax, ouput
+	add rax, output
 	mov r10d, sumG
 	mov [rax], r10b
 
@@ -380,17 +378,17 @@ SAVE:
 	mul widthX
 	add rax, iter_x
 	add rax, 2				
-	add rax, ouput
+	add rax, output
 	mov r10d, sumB
 	mov [rax], r10b
 
 	mov rax, iter_x		
 	cmp rax, x_max
-	JB PETLAX
+	JB LOOP_X
 
 	mov rax, iter_y		
 	cmp rax, y_max
-	JB PETLAY
+	JB LOOP_Y
 
 	ret
 

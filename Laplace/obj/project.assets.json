@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Achim\\Desktop\\studia\\Laplace\\Laplace\\Laplace\\Laplace.csproj",
+      "projectUniqueName": "C:\\Users\\Achim\\Desktop\\studia\\Laplace\\LaplaceX\\Laplace\\Laplace.csproj",
       "projectName": "Laplace",
-      "projectPath": "C:\\Users\\Achim\\Desktop\\studia\\Laplace\\Laplace\\Laplace\\Laplace.csproj",
+      "projectPath": "C:\\Users\\Achim\\Desktop\\studia\\Laplace\\LaplaceX\\Laplace\\Laplace.csproj",
       "packagesPath": "C:\\Users\\Achim\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Achim\\Desktop\\studia\\Laplace\\Laplace\\Laplace\\obj\\",
+      "outputPath": "C:\\Users\\Achim\\Desktop\\studia\\Laplace\\LaplaceX\\Laplace\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

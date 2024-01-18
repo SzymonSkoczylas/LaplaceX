@@ -40,7 +40,7 @@ extern "C" __declspec(dllexport) void __stdcall ApplyFilterCpp(unsigned char* in
             int BlueSum = 0;
             int idMask = 0;
             for (int pxY = -1; pxY <= 1; pxY++)                 //
-            {                                                   // p?tle otaczaj?ce dooko?a piksel, dla którego jest aktualnie wyznaczana nowa warto??
+            {                                                   // p?tle otaczaj?ce dooko?a piksel, dla ktÃ³rego jest aktualnie wyznaczana nowa warto??
                 for (int pxX = -1; pxX <= 1; pxX++)             //
                 {
                     int r = input[(y - pxY) * width * 3 + x + pxX * 3 + 2] * MASK[idMask];
@@ -51,8 +51,8 @@ extern "C" __declspec(dllexport) void __stdcall ApplyFilterCpp(unsigned char* in
                     BlueSum += b;      // 
                     idMask++;
                 }
-            }                                                           // sposób wybierania pozycji:
-                                                                        // wybór rz?du: (odpowiedni rz?d Y - przesuni?cie wzgl?dem ?rodkowego piksela) * szeroko?? obrazka * 3(RGB)
+            }                                                           // sposÃ³b wybierania pozycji:
+                                                                        // wybÃ³r rz?du: (odpowiedni rz?d Y - przesuni?cie wzgl?dem ?rodkowego piksela) * szeroko?? obrazka * 3(RGB)
             RedSum = (RedSum < 0) ? 0 : (RedSum > 255) ? 255 : RedSum;
             GreenSum = (GreenSum < 0) ? 0 : (GreenSum > 255) ? 255 : GreenSum;
             BlueSum = (BlueSum < 0) ? 0 : (BlueSum > 255) ? 255 : BlueSum;
