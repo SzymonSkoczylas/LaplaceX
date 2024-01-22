@@ -13,7 +13,7 @@ namespace Laplace
 {
     public partial class Form1 : Form
     {
-        public String imagePath = @"C:\Users\Achim\Desktop\studia\Laplace\Laplace\smallS.bmp";
+        public String imagePath = @"C:\Users\Achim\Desktop\studia\Laplace\Laplace\smallX.bmp";
         public String finalPath = @"C:\Users\Achim\Desktop\studia\Laplace\Laplace\smallO.bmp";
         public int threads = 64;
         Bitmap image;

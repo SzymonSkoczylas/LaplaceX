@@ -1,1 +1,6 @@
-﻿  AsmDLL.vcxproj -> C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\AsmDLL.dll
+﻿  Assembling AsmAlgorithm.asm...
+     Creating library C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\AsmDLL.lib and object C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\AsmDLL.exp
+AsmDLL.exp : warning LNK4070: /OUT:AsmAlgorithm.dll directive in .EXP differs from output filename 'C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\AsmDLL.dll'; ignoring directive
+  LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
+AsmDLL.exp : warning LNK4070: /OUT:AsmAlgorithm.dll directive in .EXP differs from output filename 'C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\AsmDLL.dll'; ignoring directive
+  AsmDLL.vcxproj -> C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\AsmDLL.dll

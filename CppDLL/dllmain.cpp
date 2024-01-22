@@ -1,4 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
+//Szymon Skoczylas
+// Filtr Laplace'a 
+// 2024
 #include "pch.h"
 #include <algorithm>
 
@@ -30,7 +33,7 @@ unsigned char CalculateNewPixelValue(unsigned char* fragment, long* masks)
 // The function filters the specified fragment and saves it to the output array.
 extern "C" __declspec(dllexport) void __stdcall ApplyFilterCpp(unsigned char* input, int width, int height, unsigned char* output) {
     // Initialize masks with values from the Laplace LAPL1 filter
-    int MASK[9] = { 1, 1, 1, 1, -8, 1, 1, 1, 1 };
+    int MASK[9] = { -1, 0, -1, 0, 4, 0, -1, 0, -1 };
     for (int y = 1; y < height - 1; y++)                        // p?tla po warto?ciach Y obrazu
     {
         for (int x = 3; x < width * 3 - 3; x += 3)              // p?tla po warto?ciach X obrazu, uwzgl?dniaj?c, ?e ka?dy piksel posiada trzy warto?ci R,G,B

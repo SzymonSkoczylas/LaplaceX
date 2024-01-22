@@ -1,3 +1,6 @@
+;Szymon Skoczylas
+; Filtr Laplace'a 
+; 2024
 .data
 	LAPLACE_MASK SDWORD -1, 0, -1, 0, 4, 0, -1, 0, -1
 
@@ -47,8 +50,7 @@ ApplyFilterAsm proc EXPORT
 
 	VXORPS ymm0, ymm0, ymm0
 	VXORPS ymm1, ymm1, ymm1
-	VXORPS ymm2, ymm2, ymm2
-	VXORPS ymm3, ymm3, ymm3
+	VXORPS ymm2, ymm2, ymm2A
 	VMOVUPS ymm3, LAPLACE_MASK+4
 	VCVTDQ2PS ymm3, ymm3
 
@@ -252,7 +254,7 @@ LOOP_X:
 	add sumR, eax
 	loop get_lower_lane 
 
-	;YMMM shift
+	;YMMM hift
 	VPERM2F128 ymm0, ymm0, ymm0, 1
 	VPERM2F128 ymm1, ymm1, ymm1, 1
 	VPERM2F128 ymm2, ymm2, ymm2, 1

@@ -12,8 +12,9 @@
       }
     ],
     "additionalProbingPaths": [
-      "C:\\Users\\achim\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\achim\\.nuget\\packages"
+      "C:\\Users\\Achim\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\Achim\\.nuget\\packages",
+      "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
     ],
     "configProperties": {
       "System.Reflection.Metadata.MetadataUpdater.IsSupported": false,

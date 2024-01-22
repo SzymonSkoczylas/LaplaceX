@@ -1,4 +1,8 @@
-﻿using System.Printing.IndexedProperties;
+﻿//Szymon Skoczylas
+// Filtr Laplace'a 
+// 2024
+
+using System.Printing.IndexedProperties;
 using System.Runtime.InteropServices;
 
 
@@ -10,10 +14,10 @@ namespace Laplace
         public static List<Tuple<byte[], int, int, byte[]>> threadValuesAsm;
 #if RELEASE
         // Dll z CPP
-        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\Laplace\x64\Release\CppDLL.dll")]
+        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\CppDLL.dll")]
         static extern void ApplyFilterCpp(byte[] input, int width, int height, byte[] output);
         // Dll z Asm
-        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\Laplace\x64\Release\AsmDLL.dll")]
+        [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Release\AsmDLL.dll")]
         static extern void ApplyFilterAsm(byte[] input, int width, int height, byte[] output);
 #else
         // Dll z CPP
