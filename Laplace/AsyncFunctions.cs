@@ -8,7 +8,7 @@ namespace Laplace
     {
         public static List<Tuple<int, int, byte[]>> threadValues;
         public static List<Tuple<byte[], int, int, byte[]>> threadValuesAsm;
-#if FALSE
+#if RELEASE
         // Dll z CPP
         [DllImport(@"C:\Users\Achim\Desktop\studia\Laplace\Laplace\x64\Release\CppDLL.dll")]
         static extern void ApplyFilterCpp(byte[] input, int width, int height, byte[] output);

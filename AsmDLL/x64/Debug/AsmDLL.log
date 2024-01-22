@@ -1,3 +1,1 @@
-﻿     Creating library C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Debug\AsmDLL.lib and object C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Debug\AsmDLL.exp
-AsmDLL.exp : warning LNK4070: /OUT:AsmAlgorithm.dll directive in .EXP differs from output filename 'C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Debug\AsmDLL.dll'; ignoring directive
-  AsmDLL.vcxproj -> C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Debug\AsmDLL.dll
+﻿  AsmDLL.vcxproj -> C:\Users\Achim\Desktop\studia\Laplace\LaplaceX\x64\Debug\AsmDLL.dll
